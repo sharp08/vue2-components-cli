@@ -1,19 +1,19 @@
 # vue2-components-cli
+- 使用 vue-cli 搭建的 vue2 组件库
 
-## Project setup
+## 安装依赖
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### 启动
 ```
 yarn serve
 ```
 
-### Compiles and minifies for production
+### 打包库
 ```
-yarn build
+yarn lib
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 说明
