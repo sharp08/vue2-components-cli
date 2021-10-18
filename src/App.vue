@@ -1,19 +1,16 @@
 <template>
   <div class="wrap">
-    <MyRich />
-    <!-- <hr />
-    <MyButton type="danger" />
-    <hr />
-    <MyInput /> -->
+    <MyGantt />
   </div>
 </template>
 
 <script>
-import MyRich from "./components/MyRich";
+import MyGantt from "./components/MyGantt";
+
 export default {
   name: "App",
   components: {
-    MyRich,
+    MyGantt,
   },
   data() {
     return {};
@@ -24,6 +21,9 @@ export default {
 </script>
 
 <style lang="less">
+body {
+  margin: 0;
+}
 .wrap {
 }
 </style>
