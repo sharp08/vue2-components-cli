@@ -7,7 +7,7 @@
       :taskList="taskList"
     />
     <div class="resize-handler"></div>
-    <GanttTable :taskList="taskList" class="gantt-table" />
+    <GanttTable :taskList="taskList" class="gantt-table" :lines="lines" />
   </div>
 </template>
 
@@ -25,7 +25,7 @@ export default {
           text: "第一列",
           key: "one",
           render: (h) => {
-            return h("span", "aabb");
+            return h("span", "测试render");
           },
         },
         {
@@ -37,30 +37,53 @@ export default {
           key: "three",
         },
       ],
+      // 任务列表
       taskList: [
         {
+          id: "1",
           one: "任务1 - 列1",
           two: "任务1 - 列2",
           three: "任务1 - 列3",
         },
         {
+          id: "2",
           one: "任务2 - 列1",
           two: "任务2 - 列2",
           three: "任务2 - 列3",
         },
         {
+          id: "3",
           one: "任务3 - 列1",
           two: "任务3 - 列2",
           three: "任务3 - 列3",
         },
+        {
+          id: "4",
+          one: "任务4 - 列1",
+          two: "任务4 - 列2",
+          three: "任务4 - 列3",
+        },
+      ],
+      // 连接线
+      lines: [
+        {
+          from: "1",
+          to: "3",
+          type: "start-start",
+        },
+        {
+          from: "2",
+          to: "4",
+          type: "start-start",
+        },
+        {
+          from: "2",
+          to: "4",
+          type: "end-end",
+        },
       ],
     };
   },
-  computed: {},
-  created() {},
-  mounted() {},
-  watch: {},
-  methods: {},
   components: {
     TaskTable,
     GanttTable,
@@ -71,6 +94,9 @@ export default {
 <style scoped lang="less">
 #gantt-wrap {
   display: flex;
+  height: 100%;
+  width: 100%;
+  position: relative;
 
   .task-table {
     background: orange;
@@ -83,11 +109,11 @@ export default {
     width: 15px;
     flex-shrink: 0;
     background: rgb(107, 71, 62);
-    cursor: pointer;
+    cursor: w-resize;
   }
   .gantt-table {
-    flex-basis: auto;
     overflow: auto;
+    flex: 1;
   }
 }
 </style>

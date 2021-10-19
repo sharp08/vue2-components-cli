@@ -1,0 +1,32 @@
+.resizable-div {
+  position: absolute;
+  top: 0;
+  height: 22px;
+  width: 50px;
+  background: orange;
+
+  .left-handler {
+    background: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 100%;
+    cursor: w-resize;
+  }
+
+  .content {
+    height: 100%;
+    width: 100%;
+  }
+
+  .right-handler {
+    background: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: w-resize;
+  }
+}

@@ -20,7 +20,12 @@
           v-for="(columnItem, columnsIndex) in columns"
           :key="columnsIndex"
         >
-          {{ taskItem[columnItem.key] }}
+          <template v-if="columnItem.render">
+            <TableCell name="abc" :name2="123" :render="columnItem.render" />
+          </template>
+          <template v-else>
+            {{ taskItem[columnItem.key] }}
+          </template>
         </div>
       </div>
     </div>
@@ -28,6 +33,8 @@
 </template>
 
 <script>
+import TableCell from "../TableCell";
+
 export default {
   name: "TaskTable",
   props: {
@@ -46,7 +53,9 @@ export default {
   mounted() {},
   watch: {},
   methods: {},
-  components: {},
+  components: {
+    TableCell,
+  },
 };
 </script>
 

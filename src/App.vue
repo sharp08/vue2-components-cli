@@ -1,6 +1,8 @@
 <template>
   <div class="wrap">
-    <MyGantt />
+    <div class="gantt-demo-container">
+      <MyGantt />
+    </div>
   </div>
 </template>
 
@@ -25,5 +27,10 @@ body {
   margin: 0;
 }
 .wrap {
+  .gantt-demo-container {
+    height: 500px;
+    width: 700px;
+    border: 5px solid red;
+  }
 }
 </style>

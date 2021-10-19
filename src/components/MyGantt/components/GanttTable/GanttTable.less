@@ -4,6 +4,15 @@
     }
 
     .tb {
-        background: #95a0da;
+        position: relative;
+
+        .tr {
+            min-height: 30px;
+            background: rgba(149, 160, 218, 1);
+
+            &:nth-child(even) {
+                background: rgba(149, 160, 218, 0.8);
+            }
+        }
     }
 }
