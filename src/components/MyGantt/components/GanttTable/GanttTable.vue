@@ -1,31 +1,41 @@
 <template>
   <div id="gantt-table">
-    <!-- 表头 -->
-    <div class="th" ref="th">
-      <div class="tr">图表区 - 表头</div>
-    </div>
-    <!-- 表体 -->
-    <div class="tb">
-      <div class="tr" v-for="(item, index) in taskList" :key="index">
-        <div class="td"></div>
-        <!-- 暂时写死 4 = (行高30 - 拖拽区高22) / 2 -->
-        <ResizableDiv
-          :ref="'resize_' + item.id"
-          @event="(type) => handleResizableDivEvent(type, item.id)"
-          :style="{
-            top: `${index * 30 + 4}px`,
-            left: `${(index + 1) * 50}px`,
-          }"
+    <!-- 这一层用于展示完整的、没有滚动条的图，切换 scales 时，应该重新设置这一层的宽度 -->
+    <div class="default-no-fold">
+      <!-- 表头 -->
+      <div class="th" ref="th">
+        <div
+          class="tr"
+          :style="{ height: `${100 / scales.length}%` }"
+          v-for="item in scales"
+          :key="item.unit"
+        >
+          {{ item.unit }}
+        </div>
+      </div>
+      <!-- 表体 -->
+      <div class="tb">
+        <div class="tr" v-for="(item, index) in taskList" :key="index">
+          <div class="td"></div>
+          <!-- 暂时写死 4 = (行高30 - 拖拽区高22) / 2 -->
+          <ResizableDiv
+            :ref="'resize_' + item.id"
+            @event="(type) => handleResizableDivEvent(type, item.id)"
+            :style="{
+              top: `${index * 30 + 4}px`,
+              left: `${(index + 1) * 50}px`,
+            }"
+          />
+        </div>
+        <!-- 连接线 -->
+        <component
+          :key="'line_' + index"
+          v-for="(item, index) in renderLines"
+          :is="lineComp(item)"
+          :style="item.style"
+          :length="item.length"
         />
       </div>
-      <!-- 连接线 -->
-      <component
-        :key="'line_' + index"
-        v-for="(item, index) in renderLines"
-        :is="lineComp(item)"
-        :style="item.style"
-        :length="item.length"
-      />
     </div>
   </div>
 </template>
@@ -40,6 +50,9 @@ import EndStartLine from "../EndStartLine";
 export default {
   name: "GanttTable",
   props: {
+    scales: {
+      type: Array,
+    },
     taskList: {
       type: Array,
     },
@@ -56,8 +69,21 @@ export default {
   },
   data() {
     return {
+      // 用于渲染连接线
       renderLines: [],
     };
+  },
+  computed: {
+    // 用于渲染头部
+    renderHead() {
+      let r = [];
+      r = this.scales.map((item) => {
+        if (item.unit === "year") {
+          // todo
+        }
+      });
+      return r;
+    },
   },
   mounted() {
     // 需要动态保证左右两侧高度一致

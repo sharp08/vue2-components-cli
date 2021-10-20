@@ -7,7 +7,14 @@
       :taskList="taskList"
     />
     <div class="resize-handler"></div>
-    <GanttTable :taskList="taskList" class="gantt-table" :lines="lines" />
+    <GanttTable
+      :startTime="startTime"
+      :endTime="endTime"
+      :scales="scales"
+      :taskList="taskList"
+      class="gantt-table"
+      :lines="lines"
+    />
   </div>
 </template>
 
@@ -20,6 +27,9 @@ export default {
   props: {},
   data() {
     return {
+      startTime: "2019-04-01",
+      endTime: "2021-09-25",
+      // 左侧任务列
       columns: [
         {
           text: "第一列",
@@ -35,6 +45,18 @@ export default {
         {
           text: "第三列",
           key: "three",
+        },
+      ],
+      // 纬度
+      scales: [
+        {
+          unit: "year",
+        },
+        {
+          unit: "month",
+        },
+        {
+          unit: "day",
         },
       ],
       // 任务列表
@@ -106,8 +128,8 @@ export default {
   .task-table {
     background: orange;
     flex-shrink: 0;
-    flex-basis: 300px;
     overflow: auto;
+    width: 300px;
   }
 
   .resize-handler {

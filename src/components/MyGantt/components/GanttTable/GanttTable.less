@@ -1,17 +1,22 @@
 #gantt-table {
-    .th {
-        background: lightblue;
-    }
+    .default-no-fold {
+        width: 100%;
+        min-width: 450px;
 
-    .tb {
-        position: relative;
+        .th {
+            background: lightblue;
+        }
 
-        .tr {
-            min-height: 30px;
-            background: rgba(149, 160, 218, 1);
+        .tb {
+            position: relative;
 
-            &:nth-child(even) {
-                background: rgba(149, 160, 218, 0.8);
+            .tr {
+                min-height: 30px;
+                background: rgba(149, 160, 218, 1);
+
+                &:nth-child(even) {
+                    background: rgba(149, 160, 218, 0.8);
+                }
             }
         }
     }
