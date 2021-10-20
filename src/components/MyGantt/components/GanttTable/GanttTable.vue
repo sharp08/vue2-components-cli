@@ -34,9 +34,9 @@
 import ResizableDiv from "../ResizableDiv";
 import StartStartLine from "../StartStartLine";
 import EndEndLine from "../EndEndLine";
+import StartEndLine from "../StartEndLine";
+import EndStartLine from "../EndStartLine";
 
-// 针对 StartStartLine 的最终目标是，通过传入 lines 数组
-// 内部对 lines 数据进行解析，生成
 export default {
   name: "GanttTable",
   props: {
@@ -59,7 +59,6 @@ export default {
       renderLines: [],
     };
   },
-  computed: {},
   mounted() {
     // 需要动态保证左右两侧高度一致
     this.$refs[
@@ -68,34 +67,27 @@ export default {
 
     this.renderLines = this.createRenderLines();
   },
-  watch: {},
   methods: {
     createRenderLines() {
       let r = [];
       this.lines.forEach((item) => {
         const fromDom = this.$refs[`resize_${item.from}`][0].$el;
         const toDom = this.$refs[`resize_${item.to}`][0].$el;
-        if (item.type === "start-start") {
-          const o = this.createSSLine(
-            fromDom,
-            toDom,
-            item.from,
-            item.to,
-            item.type
-          );
-
-          r.push(o);
-        } else if (item.type === "end-end") {
-          const o = this.createEELine(
-            fromDom,
-            toDom,
-            item.from,
-            item.to,
-            item.type
-          );
-
-          r.push(o);
-        }
+        // 做个映射，减少重复代码
+        const map = {
+          "start-start": "createSSLine",
+          "end-end": "createEELine",
+          "start-end": "createSELine",
+          "end-start": "createESLine",
+        };
+        const o = this[map[item.type]](
+          fromDom,
+          toDom,
+          item.from,
+          item.to,
+          item.type
+        );
+        r.push(o);
       });
 
       return r;
@@ -166,6 +158,90 @@ export default {
       };
       return o;
     },
+    // 创建 start-end 连接线
+    createSELine(fromDom, toDom, fromId, toId, type) {
+      let line1, line2, line3, line4, line5, top, left;
+      const defaultLen = 30; //  默认宽度
+      const dis = 3; //  偏移量，让线与元素保持一点点距离
+      // 起点元素左边距
+      const fromDomLeftPos = fromDom.offsetLeft;
+      // 终点元素右边距
+      const toDomRightPos = toDom.offsetLeft + toDom.clientWidth;
+
+      // 场景一
+      if (fromDomLeftPos - toDomRightPos >= defaultLen * 2) {
+        line1 = defaultLen;
+        line2 = toDom.offsetTop - fromDom.offsetTop - defaultLen / 2;
+        line3 = 2; //  这里是线宽
+        line4 = defaultLen / 2;
+        line5 = fromDomLeftPos - toDomRightPos - defaultLen - 4; //  4 是调试出来的，换成 dis 箭头会有偏移
+      }
+      // 场景二
+      else if (fromDomLeftPos - toDomRightPos < defaultLen * 2) {
+        line1 = defaultLen;
+        line2 = toDom.offsetTop - fromDom.offsetTop - defaultLen / 2;
+        line3 = Math.abs(
+          toDomRightPos + defaultLen - (fromDomLeftPos - defaultLen) + dis * 2
+        );
+        line4 = defaultLen / 2;
+        line5 = defaultLen;
+      }
+      top = fromDom.offsetTop + fromDom.clientHeight / 2;
+      left = fromDomLeftPos - defaultLen - dis;
+
+      let o = {
+        style: {
+          top: top + "px",
+          left: left + "px",
+        },
+        length: [line1, line2, line3, line4, line5],
+        from: fromId,
+        to: toId,
+        type,
+      };
+      return o;
+    },
+    // 创建 end-start 连接线
+    createESLine(fromDom, toDom, fromId, toId, type) {
+      let line1, line2, line3, line4, line5, top, left;
+      const defaultLen = 30; //  默认宽度
+      const dis = 3; //  偏移量，让线与元素保持一点点距离
+      // 起点元素右端到容器左侧距离
+      const fromDomRightPos = fromDom.offsetLeft + fromDom.clientWidth;
+      // 终点元素左端到容器左侧距离
+      const toDomLeftPos = toDom.offsetLeft;
+
+      // 场景一
+      if (toDomLeftPos - fromDomRightPos >= defaultLen * 2) {
+        line1 = defaultLen;
+        line2 = toDom.offsetTop - fromDom.offsetTop - defaultLen / 2;
+        line3 = 2; //  这里是线宽
+        line4 = defaultLen / 2;
+        line5 = toDomLeftPos - fromDomRightPos - defaultLen - dis; //  4 是调试出来的，换成 dis 箭头会有偏移
+      }
+      // 场景二
+      else if (toDomLeftPos - fromDomRightPos < defaultLen * 2) {
+        line1 = defaultLen;
+        line2 = toDom.offsetTop - fromDom.offsetTop - defaultLen / 2;
+        line3 = (defaultLen + dis) * 2 - (toDomLeftPos - fromDomRightPos);
+        line4 = defaultLen / 2;
+        line5 = defaultLen;
+      }
+      top = fromDom.offsetTop + fromDom.clientHeight / 2;
+      left = fromDomRightPos + dis;
+
+      let o = {
+        style: {
+          top: top + "px",
+          left: left + "px",
+        },
+        length: [line1, line2, line3, line4, line5],
+        from: fromId,
+        to: toId,
+        type,
+      };
+      return o;
+    },
     // 当 ResizableDiv 拖拽或者缩放时触发
     handleResizableDivEvent(type, taskId) {
       // 判断 renderLines 里面是否包含 taskId 无论 from 还是 to 属性
@@ -202,6 +278,32 @@ export default {
             // 删掉原来的线，用新的线替换
             this.renderLines.splice(index, 1, newLine);
           }
+          // 类型三
+          else if (item.type === "start-end") {
+            // 重新创建这条线
+            const newLine = this.createSELine(
+              fromDom,
+              toDom,
+              item.from,
+              item.to,
+              item.type
+            );
+            // 删掉原来的线，用新的线替换
+            this.renderLines.splice(index, 1, newLine);
+          }
+          // 类型四
+          else if (item.type === "end-start") {
+            // 重新创建这条线
+            const newLine = this.createESLine(
+              fromDom,
+              toDom,
+              item.from,
+              item.to,
+              item.type
+            );
+            // 删掉原来的线，用新的线替换
+            this.renderLines.splice(index, 1, newLine);
+          }
         }
       });
     },
@@ -215,6 +317,12 @@ export default {
         case "end-end":
           compName = "EndEndLine";
           break;
+        case "start-end":
+          compName = "StartEndLine";
+          break;
+        case "end-start":
+          compName = "EndStartLine";
+          break;
       }
       return compName;
     },
@@ -223,6 +331,8 @@ export default {
     ResizableDiv,
     StartStartLine,
     EndEndLine,
+    StartEndLine,
+    EndStartLine,
   },
 };
 </script>

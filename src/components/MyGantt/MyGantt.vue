@@ -74,12 +74,17 @@ export default {
         {
           from: "2",
           to: "4",
-          type: "start-start",
+          type: "end-end",
         },
         {
-          from: "2",
-          to: "4",
-          type: "end-end",
+          from: "1",
+          to: "3",
+          type: "start-end",
+        },
+        {
+          from: "1",
+          to: "2",
+          type: "end-start",
         },
       ],
     };

@@ -1,0 +1,53 @@
+.connect-line {
+    position: absolute;
+
+    .line1 {
+        height: 2px;
+        background: blue;
+        position: relative;
+
+        .line2 {
+            width: 2px;
+            background: blue;
+            position: absolute;
+            left: 0;
+
+            .line3 {
+                height: 2px;
+                background: blue;
+                position: absolute;
+                bottom: 0;
+
+                .line4 {
+                    width: 2px;
+                    background: blue;
+                    position: absolute;
+                    right: 0;
+
+                    .line5 {
+                        height: 2px;
+                        background: blue;
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+
+                        .triangle {
+                            position: absolute;
+                            top: -7px;
+                            left: -1px;
+                            width: 0px;
+                            height: 0px;
+                            border-top-width: 8px;
+                            border-left-width: 0px;
+                            border-right-width: 8px;
+                            border-bottom-width: 8px;
+                            border-style: solid;
+                            border-color: transparent;
+                            border-right-color: blue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
