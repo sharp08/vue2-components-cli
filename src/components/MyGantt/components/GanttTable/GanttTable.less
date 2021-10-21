@@ -1,10 +1,22 @@
 #gantt-table {
     .default-no-fold {
-        width: 100%;
         min-width: 450px;
+        display: inline-block;
 
         .th {
             background: lightblue;
+
+            .tr {
+                display: flex;
+
+                .td {
+                    min-width: 40px;
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
         }
 
         .tb {

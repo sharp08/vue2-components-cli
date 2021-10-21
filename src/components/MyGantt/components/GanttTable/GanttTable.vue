@@ -1,32 +1,35 @@
 <template>
   <div id="gantt-table">
     <!-- 这一层用于展示完整的、没有滚动条的图，切换 scales 时，应该重新设置这一层的宽度 -->
-    <div class="default-no-fold">
+    <div class="default-no-fold" ref="no-fold">
       <!-- 表头 -->
       <div class="th" ref="th">
         <div
           class="tr"
           :style="{ height: `${100 / scales.length}%` }"
-          v-for="item in scales"
-          :key="item.unit"
+          v-for="[k, v] in renderHead"
+          :key="k"
         >
-          {{ item.unit }}
+          <span class="td" v-for="(sub, index) in v" :key="index">{{
+            sub
+          }}</span>
         </div>
       </div>
       <!-- 表体 -->
       <div class="tb">
         <div class="tr" v-for="(item, index) in taskList" :key="index">
           <div class="td"></div>
-          <!-- 暂时写死 4 = (行高30 - 拖拽区高22) / 2 -->
-          <ResizableDiv
-            :ref="'resize_' + item.id"
-            @event="(type) => handleResizableDivEvent(type, item.id)"
-            :style="{
-              top: `${index * 30 + 4}px`,
-              left: `${(index + 1) * 50}px`,
-            }"
-          />
         </div>
+        <!-- 暂时写死 4 = (行高30 - 拖拽区高22) / 2 -->
+        <ResizableDiv
+          v-for="item in renderRegions"
+          :key="item.id"
+          :ref="'resize_' + item.id"
+          @event="(type) => handleResizableDivEvent(type, item.id)"
+          :style="{
+            top: `${item._lineIndex * 30 + 4}px`,
+          }"
+        />
         <!-- 连接线 -->
         <component
           :key="'line_' + index"
@@ -46,41 +49,88 @@ import StartStartLine from "../StartStartLine";
 import EndEndLine from "../EndEndLine";
 import StartEndLine from "../StartEndLine";
 import EndStartLine from "../EndStartLine";
+import { DATE_INTERVAL } from "@/js/utils";
 
 export default {
   name: "GanttTable",
   props: {
+    startDate: {
+      type: String,
+    },
+    endDate: {
+      type: String,
+    },
     scales: {
       type: Array,
     },
     taskList: {
       type: Array,
     },
+    regions: {
+      type: Array,
+    },
     lines: {
       type: Array,
-      default: () => [
-        {
-          from: "xxx",
-          to: "xxx",
-          type: "start-start",
-        },
-      ],
     },
   },
   data() {
     return {
       // 用于渲染连接线
       renderLines: [],
+      num: 0,
     };
   },
   computed: {
     // 用于渲染头部
     renderHead() {
-      let r = [];
-      r = this.scales.map((item) => {
-        if (item.unit === "year") {
-          // todo
+      // 这里期望 r 是一个有序对象，因此使用 Map
+      let r = new Map();
+      let years = [];
+      let months = [];
+      let days = [];
+
+      const dateTree = DATE_INTERVAL(
+        +new Date(this.startDate),
+        +new Date(this.endDate)
+      );
+      // 无论 scales 传入什么值，r 都是完整的结构
+      for (let [y, v1] of Object.entries(dateTree)) {
+        years.push(y);
+        for (let [m, v2] of Object.entries(v1)) {
+          months.push(m);
+          for (let [d, v3] of Object.entries(v2)) {
+            days.push(d);
+          }
         }
+      }
+
+      // scales 决定 renderHead 包含哪些值
+      this.scales.forEach((item) => {
+        if (item.unit === "year") {
+          r.set(item.unit, years);
+        } else if (item.unit === "month") {
+          r.set(item.unit, months);
+        } else if (item.unit === "day") {
+          r.set(item.unit, days);
+        }
+      });
+
+      return r;
+    },
+    //  用于渲染 region
+    renderRegions() {
+      let r = this.regions.map((region) => {
+        const findIndex = this.taskList.findIndex(
+          (task) => task.id === region.taskId
+        );
+        return {
+          ...region,
+          /**
+           * 因为 region 是相对于 tb 而不是相对于行定位，因此要获取到
+           * 当前 region 位于第几行才能摆正 region 的位置
+           */
+          _lineIndex: findIndex,
+        };
       });
       return r;
     },
@@ -91,9 +141,34 @@ export default {
       "th"
     ].style.height = `${this.$parent.$refs["aa"].$refs["th"].clientHeight}px`;
 
+    this.renderRegionsFn();
     this.renderLines = this.createRenderLines();
   },
   methods: {
+    // 根据数据渲染 region
+    renderRegionsFn() {
+      // 注意这里需要加上一天的时间戳才是完整的时间戳长度
+      const completeStamp =
+        new Date(this.endDate).getTime() -
+        new Date(this.startDate).getTime() +
+        86400000;
+
+      this.renderRegions.forEach((region) => {
+        const startDiffStamp =
+          new Date(region.startDate).getTime() -
+          new Date(this.startDate).getTime();
+        const regionDuration =
+          new Date(region.endDate).getTime() -
+          new Date(region.startDate).getTime();
+
+        const w =
+          this.$refs["no-fold"].clientWidth * (regionDuration / completeStamp);
+        const l =
+          this.$refs["no-fold"].clientWidth * (startDiffStamp / completeStamp);
+        this.$refs["resize_" + region.id][0].$el.style.left = l + "px";
+        this.$refs["resize_" + region.id][0].$el.style.width = w + "px";
+      });
+    },
     createRenderLines() {
       let r = [];
       this.lines.forEach((item) => {
@@ -333,7 +408,7 @@ export default {
         }
       });
     },
-    // 动态渲染 line
+    // 动态渲染 line 组件
     lineComp(item) {
       let compName;
       switch (item.type) {

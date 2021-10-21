@@ -8,10 +8,11 @@
     />
     <div class="resize-handler"></div>
     <GanttTable
-      :startTime="startTime"
-      :endTime="endTime"
+      :startDate="startDate"
+      :endDate="endDate"
       :scales="scales"
       :taskList="taskList"
+      :regions="regions"
       class="gantt-table"
       :lines="lines"
     />
@@ -27,8 +28,8 @@ export default {
   props: {},
   data() {
     return {
-      startTime: "2019-04-01",
-      endTime: "2021-09-25",
+      startDate: "2021-06-21",
+      endDate: "2021-06-30",
       // 左侧任务列
       columns: [
         {
@@ -47,7 +48,7 @@ export default {
           key: "three",
         },
       ],
-      // 纬度
+      // 维度
       scales: [
         {
           unit: "year",
@@ -86,28 +87,49 @@ export default {
           three: "任务4 - 列3",
         },
       ],
+      // 甘特图时间段
+      regions: [
+        {
+          id: "a",
+          taskId: "1",
+          startDate: "2021-06-22",
+          endDate: "2021-06-23",
+        },
+        {
+          id: "b",
+          taskId: "2",
+          startDate: "2021-06-24",
+          endDate: "2021-06-26",
+        },
+        {
+          id: "d",
+          taskId: "4",
+          startDate: "2021-06-27",
+          endDate: "2021-06-28",
+        },
+      ],
       // 连接线
       lines: [
+        // {
+        //   from: "a",
+        //   to: "d",
+        //   type: "start-start",
+        // },
+        // {
+        //   from: "a",
+        //   to: "d",
+        //   type: "end-end",
+        // },
         {
-          from: "1",
-          to: "3",
-          type: "start-start",
-        },
-        {
-          from: "2",
-          to: "4",
-          type: "end-end",
-        },
-        {
-          from: "1",
-          to: "3",
+          from: "b",
+          to: "d",
           type: "start-end",
         },
-        {
-          from: "1",
-          to: "2",
-          type: "end-start",
-        },
+        // {
+        //   from: "b",
+        //   to: "d",
+        //   type: "end-start",
+        // },
       ],
     };
   },
