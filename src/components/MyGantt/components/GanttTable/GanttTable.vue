@@ -75,9 +75,8 @@ export default {
   },
   data() {
     return {
-      // 用于渲染连接线
-      renderLines: [],
-      num: 0,
+      renderLines: [], // 用于渲染连接线
+      renderTaskList: [],
     };
   },
   computed: {
@@ -136,13 +135,30 @@ export default {
     },
   },
   mounted() {
-    // 需要动态保证左右两侧高度一致
-    this.$refs[
-      "th"
-    ].style.height = `${this.$parent.$refs["aa"].$refs["th"].clientHeight}px`;
+    // scales 发生变化 => 重新渲染 regions 和 lines
+    // regions 发生变化 => 重新渲染 regions 和 lines
+    // taskList 发生变化 => 重新渲染 regions 和 lines
+    // lines 发生变化 => 重新渲染 lines
 
-    this.renderRegionsFn();
-    this.renderLines = this.createRenderLines();
+    this.unwatch = this.$watch(
+      () => {
+        return {
+          scales: this.scales,
+          renderRegions: this.renderRegions,
+          taskList: this.taskList,
+          lines: this.lines,
+        };
+      },
+      () => {
+        this.renderRegionsFn();
+        this.renderLines = this.renderLinesFn();
+      },
+      { immediate: true }
+    );
+  },
+  beforeDestroy() {
+    this.unwatch();
+    this.unwatch = null;
   },
   methods: {
     // 根据数据渲染 region
@@ -169,26 +185,31 @@ export default {
         this.$refs["resize_" + region.id][0].$el.style.width = w + "px";
       });
     },
-    createRenderLines() {
+    // 渲染连接线
+    renderLinesFn() {
       let r = [];
       this.lines.forEach((item) => {
-        const fromDom = this.$refs[`resize_${item.from}`][0].$el;
-        const toDom = this.$refs[`resize_${item.to}`][0].$el;
-        // 做个映射，减少重复代码
-        const map = {
-          "start-start": "createSSLine",
-          "end-end": "createEELine",
-          "start-end": "createSELine",
-          "end-start": "createESLine",
-        };
-        const o = this[map[item.type]](
-          fromDom,
-          toDom,
-          item.from,
-          item.to,
-          item.type
-        );
-        r.push(o);
+        const fromRef = this.$refs[`resize_${item.from}`];
+        const toRef = this.$refs[`resize_${item.to}`];
+        if (fromRef && toRef) {
+          const fromDom = fromRef[0].$el;
+          const toDom = toRef[0].$el;
+          // 做个映射，减少重复代码
+          const map = {
+            "start-start": "createSSLine",
+            "end-end": "createEELine",
+            "start-end": "createSELine",
+            "end-start": "createESLine",
+          };
+          const o = this[map[item.type]](
+            fromDom,
+            toDom,
+            item.from,
+            item.to,
+            item.type
+          );
+          r.push(o);
+        }
       });
 
       return r;

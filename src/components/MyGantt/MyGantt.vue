@@ -3,7 +3,7 @@
     <TaskTable
       class="task-table"
       :columns="columns"
-      ref="aa"
+      ref="task-table"
       :taskList="taskList"
     />
     <div class="resize-handler"></div>
@@ -13,6 +13,7 @@
       :scales="scales"
       :taskList="taskList"
       :regions="regions"
+      ref="gantt-table"
       class="gantt-table"
       :lines="lines"
     />
@@ -25,113 +26,55 @@ import GanttTable from "./components/GanttTable";
 
 export default {
   name: "MyGantt",
-  props: {},
+  props: {
+    startDate: {
+      type: String,
+      required: true,
+    },
+    endDate: {
+      type: String,
+      required: true,
+    },
+    columns: {
+      type: Array,
+      required: true,
+    },
+    taskList: {
+      type: Array,
+      required: true,
+    },
+    scales: {
+      type: Array,
+      required: true,
+    },
+    regions: {
+      type: Array,
+      required: true,
+    },
+    lines: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
-    return {
-      startDate: "2021-06-21",
-      endDate: "2021-06-30",
-      // 左侧任务列
-      columns: [
-        {
-          text: "第一列",
-          key: "one",
-          render: (h) => {
-            return h("span", "测试render");
-          },
-        },
-        {
-          text: "第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列",
-          key: "two",
-        },
-        {
-          text: "第三列",
-          key: "three",
-        },
-      ],
-      // 维度
-      scales: [
-        {
-          unit: "year",
-        },
-        {
-          unit: "month",
-        },
-        {
-          unit: "day",
-        },
-      ],
-      // 任务列表
-      taskList: [
-        {
-          id: "1",
-          one: "任务1 - 列1",
-          two: "任务1 - 列2",
-          three: "任务1 - 列3",
-        },
-        {
-          id: "2",
-          one: "任务2 - 列1",
-          two: "任务2 - 列2",
-          three: "任务2 - 列3",
-        },
-        {
-          id: "3",
-          one: "任务3 - 列1",
-          two: "任务3 - 列2",
-          three: "任务3 - 列3",
-        },
-        {
-          id: "4",
-          one: "任务4 - 列1",
-          two: "任务4 - 列2",
-          three: "任务4 - 列3",
-        },
-      ],
-      // 甘特图时间段
-      regions: [
-        {
-          id: "a",
-          taskId: "1",
-          startDate: "2021-06-22",
-          endDate: "2021-06-23",
-        },
-        {
-          id: "b",
-          taskId: "2",
-          startDate: "2021-06-24",
-          endDate: "2021-06-26",
-        },
-        {
-          id: "d",
-          taskId: "4",
-          startDate: "2021-06-27",
-          endDate: "2021-06-28",
-        },
-      ],
-      // 连接线
-      lines: [
-        // {
-        //   from: "a",
-        //   to: "d",
-        //   type: "start-start",
-        // },
-        // {
-        //   from: "a",
-        //   to: "d",
-        //   type: "end-end",
-        // },
-        {
-          from: "b",
-          to: "d",
-          type: "start-end",
-        },
-        // {
-        //   from: "b",
-        //   to: "d",
-        //   type: "end-start",
-        // },
-      ],
-    };
+    return {};
+  },
+  mounted() {
+    // 监听 columns，用于动态设置甘特图表头高度
+    this.unwatch = this.$watch(
+      "columns",
+      () => {
+        // 需要动态保证左右两侧高度一致
+        this.$refs["gantt-table"].$refs[
+          "th"
+        ].style.height = `${this.$refs["task-table"].$refs["th"].clientHeight}px`;
+      },
+      { immediate: true }
+    );
+  },
+  beforeDestroy() {
+    this.unwatch();
+    this.unwatch = null;
   },
   components: {
     TaskTable,
@@ -141,28 +84,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-#gantt-wrap {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  position: relative;
-
-  .task-table {
-    background: orange;
-    flex-shrink: 0;
-    overflow: auto;
-    width: 300px;
-  }
-
-  .resize-handler {
-    width: 15px;
-    flex-shrink: 0;
-    background: rgb(107, 71, 62);
-    cursor: w-resize;
-  }
-  .gantt-table {
-    overflow: auto;
-    flex: 1;
-  }
-}
+@import url(./MyGantt.less);
 </style>

@@ -21,7 +21,11 @@
           :key="columnsIndex"
         >
           <template v-if="columnItem.render">
-            <TableCell name="abc" :name2="123" :render="columnItem.render" />
+            <TableCell
+              :row="taskItem"
+              :rowIndex="taskIndex"
+              :render="columnItem.render"
+            />
           </template>
           <template v-else>
             {{ taskItem[columnItem.key] }}
@@ -48,11 +52,6 @@ export default {
   data() {
     return {};
   },
-  computed: {},
-  created() {},
-  mounted() {},
-  watch: {},
-  methods: {},
   components: {
     TableCell,
   },

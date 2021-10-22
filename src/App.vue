@@ -1,18 +1,16 @@
 <template>
   <div class="wrap">
-    <div class="gantt-demo-container">
-      <MyGantt />
-    </div>
+    <MyGanttDemo />
   </div>
 </template>
 
 <script>
-import MyGantt from "./components/MyGantt";
+import MyGanttDemo from "./components/MyGantt/Demo.vue";
 
 export default {
   name: "App",
   components: {
-    MyGantt,
+    MyGanttDemo,
   },
   data() {
     return {};
@@ -25,12 +23,5 @@ export default {
 <style lang="less">
 body {
   margin: 0;
-}
-.wrap {
-  .gantt-demo-container {
-    height: 500px;
-    width: 700px;
-    border: 5px solid red;
-  }
 }
 </style>

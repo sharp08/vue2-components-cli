@@ -1,0 +1,25 @@
+#gantt-wrap {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    position: relative;
+
+    .task-table {
+        background: orange;
+        flex-shrink: 0;
+        overflow: auto;
+        width: 300px;
+    }
+
+    .resize-handler {
+        width: 15px;
+        flex-shrink: 0;
+        background: rgb(107, 71, 62);
+        cursor: w-resize;
+    }
+
+    .gantt-table {
+        overflow: auto;
+        flex: 1;
+    }
+}
