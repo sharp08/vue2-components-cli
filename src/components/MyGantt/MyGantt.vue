@@ -6,7 +6,11 @@
       ref="task-table"
       :taskList="taskList"
     />
-    <div class="resize-handler"></div>
+    <div
+      class="resize-handler"
+      ref="resize-handler"
+      @mousedown="resizeHandlerMouseDown"
+    ></div>
     <GanttTable
       :startDate="startDate"
       :endDate="endDate"
@@ -60,21 +64,57 @@ export default {
     return {};
   },
   mounted() {
+    this.$refs["resize-handler"].style.left =
+      this.$refs["task-table"].$el.clientWidth + "px";
     // 监听 columns，用于动态设置甘特图表头高度
+    const taskTh = this.$refs["task-table"].$refs["th"];
+    const ganttTh = this.$refs["gantt-table"].$refs["th"];
     this.unwatch = this.$watch(
       "columns",
       () => {
         // 需要动态保证左右两侧高度一致
-        this.$refs["gantt-table"].$refs[
-          "th"
-        ].style.height = `${this.$refs["task-table"].$refs["th"].clientHeight}px`;
+        ganttTh.style.height = `${taskTh.clientHeight}px`;
       },
       { immediate: true }
     );
+
+    // 监听 taskTh 高度，同步 ganttTh 高度
+    this.observer = new ResizeObserver(() => {
+      console.log(taskTh.clientHeight)
+      ganttTh.style.height = `${taskTh.clientHeight}px`;
+    });
+    this.observer.observe(taskTh);
   },
   beforeDestroy() {
+    this.observer.observe(taskTh);
+    this.observer = null;
     this.unwatch();
     this.unwatch = null;
+  },
+  methods: {
+    resizeHandlerMouseDown(e) {
+      const self = this.$refs["resize-handler"];
+      const originOffsetLeft = self.offsetLeft;
+      const x = e.clientX;
+
+      document.onmousemove = (e) => {
+        let dis = e.clientX - x;
+        // 右移
+        if (dis > 0) {
+          self.style.left = originOffsetLeft + dis + "px";
+        }
+        // 左移
+        else {
+          self.style.left = originOffsetLeft + dis + "px";
+        }
+      };
+
+      document.onmouseup = (e) => {
+        this.$refs["task-table"].$el.style.width = self.offsetLeft + "px";
+        document.onmousemove = null;
+        document.onmouseup = null;
+      };
+    },
   },
   components: {
     TaskTable,

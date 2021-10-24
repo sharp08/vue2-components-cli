@@ -155,8 +155,17 @@ export default {
       },
       { immediate: true }
     );
+
+    // 监听容器宽度变化，用于重新设置内容尺寸
+    this.observer = new ResizeObserver(() => {
+      this.renderRegionsFn();
+      this.renderLines = this.renderLinesFn();
+    });
+    this.observer.observe(this.$refs["no-fold"]);
   },
   beforeDestroy() {
+    this.observer.observe(this.$refs["no-fold"]);
+    this.observer = null;
     this.unwatch();
     this.unwatch = null;
   },

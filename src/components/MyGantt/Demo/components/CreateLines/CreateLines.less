@@ -1,0 +1,28 @@
+.container {
+    .display {
+        height: 100px;
+        width: 700px;
+        background: pink;
+        font-size: 12px;
+
+        .line {
+            &.selected {
+                background: lightblue;
+            }
+
+            padding: 0 10px;
+
+            &:hover {
+                background: lightblue;
+            }
+
+            height: 30px;
+            line-height: 30px;
+
+            .value {
+                color: orangered;
+                padding-right: 5px;
+            }
+        }
+    }
+}

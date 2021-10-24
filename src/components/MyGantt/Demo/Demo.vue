@@ -13,6 +13,8 @@
       <button @click="changeScales('day')" :style="styles('day')">日</button>
       <button @click="loadRegions">加载 regions</button>
       <button @click="loadLines">加载lines</button>
+      <button @click="clearLines">清除所有的 lines</button>
+      <!-- <button @click="addLines">新增lines</button> -->
     </div>
     <div class="display-container">
       <MyGantt
@@ -25,16 +27,30 @@
         :regions="regions"
       />
     </div>
+    <!-- 展示当前存在哪些 regions 用于创建连接线 -->
+    <CreateLines :regions="regions" @create="handleCreateLine" />
+    <!-- 模拟弹窗 -->
+    <SimulationPop
+      v-show="popSwitch"
+      :model="popModel"
+      @confirm="handlePopConfirm"
+      @cancel="popSwitch = false"
+    />
   </div>
 </template>
 
 <script>
-import MyGantt from "./index";
+import MyGantt from "../index";
+import CreateLines from "./components/CreateLines";
+import SimulationPop from "./components/SimulationPop";
 
 export default {
   name: "GanttDemo",
   data() {
     return {
+      popSwitch: false,
+      popModel: {},
+
       startDate: "",
       endDate: "",
       // 左侧任务列
@@ -81,19 +97,25 @@ export default {
               {
                 on: {
                   click: () => {
-                    console.log(params);
+                    this.popModel = {
+                      taskId: params.row.id,
+                      startDate: null,
+                      endDate: null,
+                    };
+
+                    this.popSwitch = true;
                   },
                 },
               },
-              "aaa"
+              "新增"
             );
           },
         },
       ];
     },
     loadDate() {
-      this.startDate = "2021-06-21";
-      this.endDate = "2021-06-30";
+      this.startDate = "2021-10-01";
+      this.endDate = "2021-10-10";
     },
     loadScales() {
       this.scales = [
@@ -141,20 +163,20 @@ export default {
         {
           id: "a",
           taskId: "1",
-          startDate: "2021-06-22",
-          endDate: "2021-06-23",
+          startDate: "2021-10-02",
+          endDate: "2021-10-03",
         },
         {
           id: "b",
           taskId: "2",
-          startDate: "2021-06-24",
-          endDate: "2021-06-26",
+          startDate: "2021-10-04",
+          endDate: "2021-10-06",
         },
         {
           id: "d",
           taskId: "4",
-          startDate: "2021-06-27",
-          endDate: "2021-06-28",
+          startDate: "2021-10-07",
+          endDate: "2021-10-08",
         },
       ];
     },
@@ -181,6 +203,9 @@ export default {
         //   type: "end-start",
         // },
       ];
+    },
+    clearLines() {
+      this.lines = [];
     },
     changeScales(unit) {
       let temp = [...this.scales];
@@ -209,9 +234,26 @@ export default {
         };
       }
     },
+    handlePopConfirm(params) {
+      this.regions.push(params);
+      this.popSwitch = false;
+    },
+    handleCreateLine({ ids, type }) {
+      if (ids.length === 2) {
+        this.lines.push({
+          from: ids[0],
+          to: ids[1],
+          type,
+        });
+      } else {
+        console.warn("请选择两条需要连接的数据");
+      }
+    },
   },
   components: {
     MyGantt,
+    SimulationPop,
+    CreateLines,
   },
 };
 </script>

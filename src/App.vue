@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import MyGanttDemo from "./components/MyGantt/Demo.vue";
+import MyGanttDemo from "./components/MyGantt/Demo";
 
 export default {
   name: "App",

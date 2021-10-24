@@ -1,35 +1,38 @@
 <template>
   <div id="task-table">
-    <!-- 表头 -->
-    <div class="th" ref="th">
-      <div class="tr">
-        <div class="td" v-for="(item, index) in columns" :key="index">
-          {{ item.text }}
+    <!-- 这一层用于展示完整的、没有滚动条的图，切换 scales 时，应该重新设置这一层的宽度 -->
+    <div class="default-no-fold">
+      <!-- 表头 -->
+      <div class="th" ref="th">
+        <div class="tr">
+          <div class="td" v-for="(item, index) in columns" :key="index">
+            {{ item.text }}
+          </div>
         </div>
       </div>
-    </div>
-    <!-- 表体 -->
-    <div class="tb">
-      <div
-        class="tr"
-        v-for="(taskItem, taskIndex) in taskList"
-        :key="taskIndex"
-      >
+      <!-- 表体 -->
+      <div class="tb">
         <div
-          class="td"
-          v-for="(columnItem, columnsIndex) in columns"
-          :key="columnsIndex"
+          class="tr"
+          v-for="(taskItem, taskIndex) in taskList"
+          :key="taskIndex"
         >
-          <template v-if="columnItem.render">
-            <TableCell
-              :row="taskItem"
-              :rowIndex="taskIndex"
-              :render="columnItem.render"
-            />
-          </template>
-          <template v-else>
-            {{ taskItem[columnItem.key] }}
-          </template>
+          <div
+            class="td"
+            v-for="(columnItem, columnsIndex) in columns"
+            :key="columnsIndex"
+          >
+            <template v-if="columnItem.render">
+              <TableCell
+                :row="taskItem"
+                :rowIndex="taskIndex"
+                :render="columnItem.render"
+              />
+            </template>
+            <template v-else>
+              {{ taskItem[columnItem.key] }}
+            </template>
+          </div>
         </div>
       </div>
     </div>

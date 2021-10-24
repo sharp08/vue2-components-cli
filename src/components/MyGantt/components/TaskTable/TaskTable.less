@@ -1,29 +1,35 @@
 #task-table {
-    .th {
-        .tr {
-            display: flex;
-            min-height: 90px;
+    .default-no-fold {
+        min-width: 300px;
 
-            .td {
-                flex: 1;
+        .th {
 
-                &:nth-child(odd) {
-                    background: pink;
+            .tr {
+                display: flex;
+                min-height: 90px;
+
+                .td {
+                    flex: 1;
+                    padding: 4px;
+
+                    &:nth-child(odd) {
+                        background: pink;
+                    }
                 }
             }
         }
-    }
 
-    .tb {
-        .tr {
-            display: flex;
-            min-height: 30px;
+        .tb {
+            .tr {
+                display: flex;
+                min-height: 30px;
 
-            .td {
-                flex: 1;
+                .td {
+                    flex: 1;
 
-                &:nth-child(odd) {
-                    background: red;
+                    &:nth-child(odd) {
+                        background: red;
+                    }
                 }
             }
         }
