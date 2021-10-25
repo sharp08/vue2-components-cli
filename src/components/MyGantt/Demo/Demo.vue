@@ -28,7 +28,7 @@
         :regions="regions"
       />
     </div>
-    <!-- 展示当前存在哪些 regions 用于创建连接线 -->
+    <!-- 展示当前存在哪些 regions ，用于创建连接线 -->
     <CreateLines :regions="regions" @create="handleCreateLine" />
     <!-- 模拟弹窗 -->
     <SimulationPop
@@ -120,7 +120,7 @@ export default {
     },
     loadDate() {
       this.startDate = "2021-10-01";
-      this.endDate = "2021-10-10";
+      this.endDate = "2021-11-02";
     },
     loadScales() {
       this.scales = [

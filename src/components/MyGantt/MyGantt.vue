@@ -46,7 +46,6 @@ export default {
     },
     taskList: {
       type: Array,
-      required: true,
     },
     scales: {
       type: Array,
@@ -54,11 +53,9 @@ export default {
     },
     regions: {
       type: Array,
-      required: true,
     },
     lines: {
       type: Array,
-      required: true,
     },
   },
   data() {

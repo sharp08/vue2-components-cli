@@ -10,9 +10,13 @@
           v-for="[k, v] in renderHead"
           :key="k"
         >
-          <span class="td" v-for="(sub, index) in v" :key="index">{{
-            sub
-          }}</span>
+          <span
+            class="td"
+            :style="{ 'flex-grow': sub.grow }"
+            v-for="(sub, index) in v"
+            :key="index"
+            >{{ sub.val }}</span
+          >
         </div>
       </div>
       <!-- 表体 -->
@@ -94,15 +98,32 @@ export default {
         +new Date(this.startDate),
         +new Date(this.endDate)
       );
+
       // 无论 scales 传入什么值，r 都是完整的结构
+      // 需要保证 月 与 日 对齐，添加 grow 属性
       for (let [y, v1] of Object.entries(dateTree)) {
-        years.push(y);
+        let a = 0; //  用来记录开始日期至结束日期的每一年有多少天
         for (let [m, v2] of Object.entries(v1)) {
-          months.push(m);
+          let b = 0; //  用来记录开始日期至结束日期的每一月有多少天
+          if (m < 10) m = `0${m}`;
           for (let [d, v3] of Object.entries(v2)) {
-            days.push(d);
+            a++;
+            b++;
+            if (d < 10) d = `0${d}`;
+            days.push({
+              grow: 1,
+              val: `${m}-${d}`,
+            });
           }
+          months.push({
+            grow: b,
+            val: `${y}-${m}`,
+          });
         }
+        years.push({
+          grow: a,
+          val: y,
+        });
       }
 
       // scales 决定 renderHead 包含哪些值
