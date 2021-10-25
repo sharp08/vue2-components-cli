@@ -5,8 +5,15 @@
       <!-- 表头 -->
       <div class="th" ref="th">
         <div class="tr">
-          <div class="td" v-for="(item, index) in columns" :key="index">
-            {{ item.text }}
+          <div
+            class="td"
+            v-for="(item, index) in renderColumns"
+            :key="index"
+            :style="item.tdStyle"
+          >
+            <div class="content" :style="item.contentStyle">
+              {{ item.text }}
+            </div>
           </div>
         </div>
       </div>
@@ -19,19 +26,22 @@
         >
           <div
             class="td"
-            v-for="(columnItem, columnsIndex) in columns"
+            v-for="(columnItem, columnsIndex) in renderColumns"
             :key="columnsIndex"
+            :style="columnItem.tdStyle"
           >
-            <template v-if="columnItem.render">
-              <TableCell
-                :row="taskItem"
-                :rowIndex="taskIndex"
-                :render="columnItem.render"
-              />
-            </template>
-            <template v-else>
-              {{ taskItem[columnItem.key] }}
-            </template>
+            <div class="content" :style="columnItem.contentStyle">
+              <template v-if="columnItem.render">
+                <TableCell
+                  :row="taskItem"
+                  :rowIndex="taskIndex"
+                  :render="columnItem.render"
+                />
+              </template>
+              <template v-else>
+                {{ taskItem[columnItem.key] }}
+              </template>
+            </div>
           </div>
         </div>
       </div>
@@ -52,8 +62,33 @@ export default {
       type: Array,
     },
   },
-  data() {
-    return {};
+  computed: {
+    renderColumns() {
+      let r = [];
+      r = this.columns.map((item) => {
+        let o = {
+          text: item.text,
+          key: item.key,
+          render: item.render,
+          tdStyle: {},
+          contentStyle: {},
+        };
+        if (item.width) {
+          o.tdStyle = {
+            "flex-basis": item.width,
+            "flex-grow": 0,
+            "flex-shrink": 0,
+            "box-sizing": "border-box",
+          };
+        }
+        if (item.align) {
+          o.contentStyle = { "text-align": item.align };
+        }
+
+        return o;
+      });
+      return r;
+    },
   },
   components: {
     TableCell,

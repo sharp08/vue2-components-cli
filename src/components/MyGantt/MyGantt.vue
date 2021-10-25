@@ -12,6 +12,7 @@
       @mousedown="resizeHandlerMouseDown"
     ></div>
     <GanttTable
+      @contentEvent="contentEvent"
       :startDate="startDate"
       :endDate="endDate"
       :scales="scales"
@@ -65,7 +66,7 @@ export default {
   },
   mounted() {
     this.$refs["resize-handler"].style.left =
-      this.$refs["task-table"].$el.clientWidth + "px";
+      this.$refs["task-table"].$el.offsetWidth + "px";
     // 监听 columns，用于动态设置甘特图表头高度
     const taskTh = this.$refs["task-table"].$refs["th"];
     const ganttTh = this.$refs["gantt-table"].$refs["th"];
@@ -73,15 +74,14 @@ export default {
       "columns",
       () => {
         // 需要动态保证左右两侧高度一致
-        ganttTh.style.height = `${taskTh.clientHeight}px`;
+        ganttTh.style.height = `${taskTh.offsetHeight}px`;
       },
       { immediate: true }
     );
 
     // 监听 taskTh 高度，同步 ganttTh 高度
     this.observer = new ResizeObserver(() => {
-      console.log(taskTh.clientHeight)
-      ganttTh.style.height = `${taskTh.clientHeight}px`;
+      ganttTh.style.height = `${taskTh.offsetHeight}px`;
     });
     this.observer.observe(taskTh);
   },
@@ -92,6 +92,7 @@ export default {
     this.unwatch = null;
   },
   methods: {
+    // 拖拽逻辑
     resizeHandlerMouseDown(e) {
       const self = this.$refs["resize-handler"];
       const originOffsetLeft = self.offsetLeft;
@@ -114,6 +115,10 @@ export default {
         document.onmousemove = null;
         document.onmouseup = null;
       };
+    },
+    //  甘特图 - 滑块事件
+    contentEvent(e, info) {
+      this.$emit("contentEvent", e, info);
     },
   },
   components: {

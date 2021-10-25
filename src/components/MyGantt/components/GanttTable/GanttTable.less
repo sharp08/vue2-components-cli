@@ -1,20 +1,28 @@
+@import url(../../style/common.less);
+
 #gantt-table {
     .default-no-fold {
         min-width: 100%;
         display: inline-block;
 
         .th {
-            background: lightblue;
+            user-select: none;
+            color: @header-font-color;
 
             .tr {
                 display: flex;
+                border-bottom: 1px solid @border-color;
+                box-sizing: border-box;
 
                 .td {
                     min-width: 40px;
                     flex: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    .center();
+                    border-right: 1px solid @border-color;
+
+                    &:last-child {
+                        border-right: none
+                    }
                 }
             }
         }
@@ -23,12 +31,9 @@
             position: relative;
 
             .tr {
-                min-height: 30px;
-                background: rgba(149, 160, 218, 1);
-
-                &:nth-child(even) {
-                    background: rgba(149, 160, 218, 0.8);
-                }
+                height: 30px;
+                box-sizing: border-box;
+                border-bottom: 1px solid @border-color;
             }
         }
     }

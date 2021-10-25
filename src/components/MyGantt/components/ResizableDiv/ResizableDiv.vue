@@ -1,28 +1,48 @@
 <template>
   <div class="resizable-div" ref="resizable-div">
-    <div
+    <!-- <div
       @mousedown="leftHandlerMouseDown"
       class="left-handler"
       ref="left-handler"
-    ></div>
-    <div @mousedown="contentMouseDown" class="content" ref="content"></div>
+    ></div> -->
     <div
+      @mouseenter="contentEvent"
+      @mouseleave="contentEvent"
+      @click="contentEvent"
+      @mousedown="contentMouseDown"
+      :class="renderInfo.class"
+      ref="content"
+    >
+      {{ renderInfo.text }}
+    </div>
+    <!-- <div
       @mousedown="rightHandlerMouseDown"
       class="right-handler"
       ref="right-handler"
-    ></div>
+    ></div> -->
   </div>
 </template>
 
 <script>
 export default {
   name: "ResizableDiv",
-  props: {},
+  props: {
+    info: {
+      type: Object,
+    },
+  },
   data() {
     return {};
   },
-  mounted() {},
-  computed: {},
+  computed: {
+    renderInfo() {
+      let r = {
+        ...this.info,
+      };
+      r.class = this.info.class ? `content ${this.info.class}` : "content blue";
+      return r;
+    },
+  },
   watch: {},
   methods: {
     // 左侧把手逻辑
@@ -57,26 +77,25 @@ export default {
     },
     // 拖拽
     contentMouseDown(e) {
-      const targetElement = this.$refs["resizable-div"]; //  拖拽运动的元素
-      const parentNode = targetElement.parentNode; // 拖拽元素的父容器
-      const maxOffsetLeft = parentNode.clientWidth - targetElement.clientWidth;
-
-      const x = targetElement.offsetLeft - e.clientX;
-      document.onmousemove = (e) => {
-        // 限制拖拽范围
-        let left = e.clientX + x;
-        if (left > maxOffsetLeft) {
-          left = maxOffsetLeft;
-        } else if (left < 0) {
-          left = 0;
-        }
-        targetElement.style.left = left + "px";
-      };
-      document.onmouseup = (e) => {
-        document.onmousemove = null;
-        document.onmouseup = null;
-        this.$emit("event", "move");
-      };
+      // const targetElement = this.$refs["resizable-div"]; //  拖拽运动的元素
+      // const parentNode = targetElement.parentNode; // 拖拽元素的父容器
+      // const maxOffsetLeft = parentNode.clientWidth - targetElement.clientWidth;
+      // const x = targetElement.offsetLeft - e.clientX;
+      // document.onmousemove = (e) => {
+      //   // 限制拖拽范围
+      //   let left = e.clientX + x;
+      //   if (left > maxOffsetLeft) {
+      //     left = maxOffsetLeft;
+      //   } else if (left < 0) {
+      //     left = 0;
+      //   }
+      //   targetElement.style.left = left + "px";
+      // };
+      // document.onmouseup = (e) => {
+      //   document.onmousemove = null;
+      //   document.onmouseup = null;
+      //   this.$emit("event", "move");
+      // };
     },
     // 右侧把手
     rightHandlerMouseDown(e) {
@@ -100,6 +119,9 @@ export default {
         document.onmouseup = null;
         this.$emit("event", "right");
       };
+    },
+    contentEvent(e) {
+      this.$emit("contentEvent", e, this.info);
     },
   },
   components: {},

@@ -25,6 +25,8 @@
           v-for="item in renderRegions"
           :key="item.id"
           :ref="'resize_' + item.id"
+          @contentEvent="contentEvent"
+          :info="item"
           @event="(type) => handleResizableDivEvent(type, item.id)"
           :style="{
             top: `${item._lineIndex * 30 + 4}px`,
@@ -456,6 +458,10 @@ export default {
           break;
       }
       return compName;
+    },
+    // 滑块事件
+    contentEvent(e, info) {
+      this.$emit("contentEvent", e, info);
     },
   },
   components: {

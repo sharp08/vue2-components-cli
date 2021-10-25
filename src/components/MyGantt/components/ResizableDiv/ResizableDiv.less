@@ -1,12 +1,13 @@
+@import url(../../style/common.less);
+
 .resizable-div {
   position: absolute;
   top: 0;
   height: 22px;
   width: 50px;
-  background: orange;
 
   .left-handler {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0);
     position: absolute;
     top: 0;
     left: 0;
@@ -18,10 +19,27 @@
   .content {
     height: 100%;
     width: 100%;
+    border-radius: 2px;
+    box-sizing: border-box;
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+    .over-dot();
+
+    &.blue {
+      border: 1px solid #2898b0;
+      background-color: #00bed7;
+    }
+
+    &.green {
+      border: 1px solid #3c9445;
+      background-color: #2acc69;
+    }
   }
 
   .right-handler {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0);
     position: absolute;
     top: 0;
     right: 0;

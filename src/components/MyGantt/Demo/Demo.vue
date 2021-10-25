@@ -2,22 +2,23 @@
   <div class="gantt-demo-container">
     <div class="tool-bar">
       <!-- <button @click="load">加载后台数据</button> -->
-      <button @click="loadColumns">加载 columns</button>
-      <button @click="loadTasks">加载 task</button>
+      <button @click="loadColumns">加载 列</button>
       <button @click="loadDate">加载 时间范围</button>
-      <button @click="loadScales">加载 scales</button>
+      <button @click="loadScales">加载 时间维度</button>
+      <button @click="loadTasks">加载 任务</button>
       <button @click="changeScales('year')" :style="styles('year')">年</button>
       <button @click="changeScales('month')" :style="styles('month')">
         月
       </button>
       <button @click="changeScales('day')" :style="styles('day')">日</button>
-      <button @click="loadRegions">加载 regions</button>
-      <button @click="loadLines">加载lines</button>
-      <button @click="clearLines">清除所有的 lines</button>
+      <button @click="loadRegions">加载 计划</button>
+      <button @click="loadLines">加载 连接线</button>
+      <button @click="clearLines">清除所有的 连接线</button>
       <!-- <button @click="addLines">新增lines</button> -->
     </div>
     <div class="display-container">
       <MyGantt
+        @contentEvent="contentEvent"
         :startDate="startDate"
         :endDate="endDate"
         :scales="scales"
@@ -83,6 +84,8 @@ export default {
         {
           text: "第一列",
           key: "one",
+          align: "right",
+          width: "50%",
         },
         {
           text: "第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列第二列",
@@ -92,23 +95,25 @@ export default {
           text: "第三列",
           key: "three",
           render: (h, params) => {
-            return h(
-              "button",
-              {
-                on: {
-                  click: () => {
-                    this.popModel = {
-                      taskId: params.row.id,
-                      startDate: null,
-                      endDate: null,
-                    };
+            return [
+              h(
+                "button",
+                {
+                  on: {
+                    click: () => {
+                      this.popModel = {
+                        taskId: params.row.id,
+                        startDate: null,
+                        endDate: null,
+                      };
 
-                    this.popSwitch = true;
+                      this.popSwitch = true;
+                    },
                   },
                 },
-              },
-              "新增"
-            );
+                "新增"
+              ),
+            ];
           },
         },
       ];
@@ -141,7 +146,7 @@ export default {
         {
           id: "2",
           one: "任务2 - 列1",
-          two: "任务2 - 列2",
+          two: "任务2 - 列2任务2 - 列2任务2 - 列2任务2 - 列2",
           three: "任务2 - 列3",
         },
         {
@@ -165,12 +170,15 @@ export default {
           taskId: "1",
           startDate: "2021-10-02",
           endDate: "2021-10-03",
+          class: "green", // 默认支持 blue green，也可以自定义，建议只改 background-color 和 border-color
+          text: "ab",
         },
         {
           id: "b",
           taskId: "2",
           startDate: "2021-10-04",
           endDate: "2021-10-06",
+          text: "长文本长文本长文本长文本",
         },
         {
           id: "d",
@@ -249,6 +257,10 @@ export default {
         console.warn("请选择两条需要连接的数据");
       }
     },
+    // 滑块上触发的事件，目前支持 mouseenter mouseleave click，通过 e.type 判断事件类型
+    contentEvent(e, info) {
+      console.log(e, info);
+    },
   },
   components: {
     MyGantt,
@@ -269,7 +281,13 @@ export default {
   .display-container {
     height: 400px;
     width: 700px;
-    border: 5px solid red;
+    margin-left: 30px;
+    margin-bottom: 10px;
   }
+}
+</style>
+<style lang="less">
+.abc {
+  background: red;
 }
 </style>

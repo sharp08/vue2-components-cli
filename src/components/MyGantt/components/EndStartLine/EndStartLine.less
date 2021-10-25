@@ -1,33 +1,35 @@
+@import url(../../style/common.less);
+
 .connect-line {
     position: absolute;
 
     .line1 {
         height: 2px;
-        background: blue;
+        background: @line-color;
         position: relative;
 
         .line2 {
             width: 2px;
-            background: blue;
+            background: @line-color;
             position: absolute;
             right: 0;
 
             .line3 {
                 height: 2px;
-                background: blue;
+                background: @line-color;
                 position: absolute;
                 bottom: 0;
                 right: 0;
 
                 .line4 {
                     width: 2px;
-                    background: blue;
+                    background: @line-color;
                     position: absolute;
                     left: 0;
 
                     .line5 {
                         height: 2px;
-                        background: blue;
+                        background: @line-color;
                         position: absolute;
                         bottom: 0;
                         left: 0;
@@ -44,7 +46,7 @@
                             border-bottom-width: 8px;
                             border-style: solid;
                             border-color: transparent;
-                            border-left-color: blue;
+                            border-left-color: @line-color;
                         }
                     }
                 }
